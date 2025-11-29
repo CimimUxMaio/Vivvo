@@ -1,2 +1,3 @@
 # Vivvo
-Rental Management App
+
+A rent management app.
