@@ -1,4 +1,13 @@
 {
   "name": "vivvo",
-  "type": "commonjs"
+  "type": "commonjs",
+
+  "scripts": {
+    "format": "prettier --write ./{css/**/*.css,js/**/*.js}",
+    "format:check": "prettier --check ./{css/**/*.css,js/**/*.js}"
+  },
+
+  "devDependencies": {
+    "prettier": "^3.7.3"
+  }
 }
