@@ -7,10 +7,8 @@ setup:
 	docker compose -f docker-compose-dev.yml up -d && echo "✔️ Docker containers started"
 	@echo "Installing npm dependencies..."
 	npm install --prefix assets && echo "✔️ npm dependencies installed"
-	@echo "Running mix setup..."
-	mix setup && echo "✔️ mix setup complete"
-	@echo "Seeding database..."
-	mix run priv/repo/seeds.exs && echo "✔️ Database seeded"
+	@echo "Running mix ecto.rese t..."
+	mix ecto.reset && echo "✔️ mix reset complete"
 
 stop:
 	@echo "Stopping Docker containers..."
