@@ -18,14 +18,14 @@ Properties.create_property(%{
   address: "Av. Libertador 2450",
   area: 75,
   rooms: 3,
-  type: :flat
+  type: :apartment
 })
 
 Properties.create_property(%{
   address: "Cordoba 1120",
   area: 32,
   rooms: 1,
-  type: :flat
+  type: :apartment
 })
 
 Properties.create_property(%{
@@ -33,11 +33,4 @@ Properties.create_property(%{
   area: 140,
   rooms: 4,
   type: :house
-})
-
-Properties.create_property(%{
-  address: "Corrientes 1200",
-  area: 60,
-  rooms: 2,
-  type: :flat
 })

@@ -4,17 +4,24 @@ defmodule VivvoWeb.PropertyLive.Index do
   alias Vivvo.Properties
   alias Vivvo.Properties.Property
 
+  alias VivvoWeb.PropertyLive.Form
+
   @impl true
   def render(assigns) do
     ~H"""
     <main class="flex flex-col gap-6">
       <section class="w-full">
         <div class="flex flex-row items-center justify-between gap-3">
-          <input
-            type="text"
-            placeholder="Search properties..."
-            class="input w-1/2"
-          />
+          <label class="input">
+            <div class="label flex items-center justify-between p-2">
+              <.icon name="hero-magnifying-glass" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search properties..."
+              class="w-1/2"
+            />
+          </label>
 
           <div class="flex items-center gap-2">
             <select class="select">
@@ -28,14 +35,25 @@ defmodule VivvoWeb.PropertyLive.Index do
                 {label}
               </option>
             </select>
+
+            <button class="btn btn-primary" onclick="new_property_modal.showModal()">
+              <.icon name="hero-plus" class="size-5" /> New Property
+            </button>
           </div>
         </div>
       </section>
 
-      <section class="w-full grid grid-cols-3 gap-5">
-        <.property_card :for={{id, property} <- @streams.properties} property={property} id="id" />
+      <section id="properties" class="w-full grid grid-cols-3 gap-5" phx-update="stream">
+        <.property_card :for={{id, property} <- @streams.properties} property={property} id={id} />
       </section>
     </main>
+
+    <.modal id="new_property_modal">
+      <.live_component
+        id="property_form"
+        module={Form}
+      />
+    </.modal>
     """
   end
 
@@ -58,6 +76,7 @@ defmodule VivvoWeb.PropertyLive.Index do
 
     ~H"""
     <a
+      id={@id}
       href="#"
       class="card bg-base-100 shadow hover:shadow-md transition"
     >
@@ -78,11 +97,8 @@ defmodule VivvoWeb.PropertyLive.Index do
         <p class="text-sm text-base-content/70">{@category} · {@property.area} m²</p>
 
         <div class="flex justify-between items-center text-sm">
-          <%= if @status == "Occupied" do %>
-            <span>Next payment: <strong>Feb 10</strong></span>
-          <% else %>
-            <span>No active lease</span>
-          <% end %>
+          <span :if={@status == "Occupied"}>Next payment: <strong>Feb 10</strong></span>
+          <span :if={@status == "Vacant"}>No active lease</span>
           <span class="text-accent font-medium">1 receipt</span>
         </div>
       </div>
@@ -95,6 +111,7 @@ defmodule VivvoWeb.PropertyLive.Index do
     {:ok, assign(socket, :page_title, "Listing Properties")}
   end
 
+  @impl true
   def handle_params(_unsigned_params, _uri, socket) do
     {:noreply, stream(socket, :properties, list_properties())}
   end
@@ -105,6 +122,11 @@ defmodule VivvoWeb.PropertyLive.Index do
     {:ok, _} = Properties.delete_property(property)
 
     {:noreply, stream_delete(socket, :properties, property)}
+  end
+
+  @impl true
+  def handle_info({:property_created, property}, socket) do
+    {:noreply, stream_insert(socket, :properties, property)}
   end
 
   defp list_properties() do
