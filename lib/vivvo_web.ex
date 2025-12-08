@@ -86,6 +86,8 @@ defmodule VivvoWeb do
       import Phoenix.HTML
       # Core UI components
       import VivvoWeb.CoreComponents
+      # Helper functions
+      import VivvoWeb.Helpers
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

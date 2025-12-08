@@ -2,11 +2,11 @@ defmodule Vivvo.Properties do
   @moduledoc """
   The Properties context.
   """
-
   import Ecto.Query, warn: false
-  alias Vivvo.Repo
 
   alias Vivvo.Properties.Property
+
+  alias Vivvo.Repo
 
   @doc """
   Returns the list of properties.
@@ -19,6 +19,7 @@ defmodule Vivvo.Properties do
   """
   def list_properties do
     Repo.all(Property)
+    |> Repo.preload(contract: :tenant)
   end
 
   @doc """
@@ -35,7 +36,7 @@ defmodule Vivvo.Properties do
       ** (Ecto.NoResultsError)
 
   """
-  def get_property!(id), do: Repo.get!(Property, id)
+  def get_property!(id), do: Repo.get!(Property, id) |> Repo.preload(contract: :tenant)
 
   @doc """
   Creates a property.
@@ -100,5 +101,9 @@ defmodule Vivvo.Properties do
   """
   def change_property(%Property{} = property, attrs \\ %{}) do
     Property.changeset(property, attrs)
+  end
+
+  def create_contract(property, contract_attrs) do
+    update_property(property, %{"contract" => contract_attrs})
   end
 end

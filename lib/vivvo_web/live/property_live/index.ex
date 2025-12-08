@@ -53,6 +53,7 @@ defmodule VivvoWeb.PropertyLive.Index do
       <.live_component
         id="property_form"
         module={Form}
+        modal="new_property_modal"
       />
     </.modal>
     """
@@ -65,7 +66,7 @@ defmodule VivvoWeb.PropertyLive.Index do
     assigns =
       assigns
       |> Map.put(:category, category)
-      |> Map.put(:status, category)
+      |> Map.put(:status, status)
 
     ~H"""
     <.link
