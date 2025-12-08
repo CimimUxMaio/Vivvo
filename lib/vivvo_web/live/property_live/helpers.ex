@@ -2,6 +2,7 @@ defmodule VivvoWeb.PropertyLive.Helpers do
   @moduledoc false
   use Phoenix.Component
 
+  alias Vivvo.Contracts.Contract
   alias Vivvo.Properties.Property
 
   # Components
@@ -25,9 +26,8 @@ defmodule VivvoWeb.PropertyLive.Helpers do
 
   # Function helpers
 
-  def property_status(_property) do
-    Enum.random(["Occupied", "Vacant"])
-  end
+  def property_status(%Property{contract: %Contract{}}), do: "Occupied"
+  def property_status(%Property{}), do: "Vacant"
 
   defp status_class("Occupied"), do: "badge-success"
   defp status_class("Vacant"), do: "badge-warning"

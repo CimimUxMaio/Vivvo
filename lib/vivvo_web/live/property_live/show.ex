@@ -5,14 +5,17 @@ defmodule VivvoWeb.PropertyLive.Show do
 
   alias Vivvo.Properties
 
+  alias VivvoWeb.PropertyLive.ContractForm
+  alias VivvoWeb.PropertyLive.Form
+
   @impl true
   def render(assigns) do
     ~H"""
     <main class="grid grid-cols-2 gap-6">
       <section class="col-span-full w-full flex items-center justify-end gap-1">
-        <.button class="btn btn-primary">Edit Property</.button>
-        <.button class="btn">Update Contract</.button>
-        <.button class="btn">Upload Receipt</.button>
+        <.button class="btn btn-primary" onclick="edit_property_modal.showModal();">
+          Edit Property
+        </.button>
       </section>
 
       <section class="col-span-full card">
@@ -31,10 +34,15 @@ defmodule VivvoWeb.PropertyLive.Show do
           <h3 class="card-title text-xl font-semibold mb-4">Contract</h3>
 
           <div class="grow flex flex-col gap-6">
-            <div class="grow space-y-2 text-base-content/70">
+            <div
+              :if={@property.contract}
+              class="grow space-y-2 text-base-content/70"
+            >
+              <% contract = @property.contract %>
+
               <div class="flex justify-between">
                 <p>Tenant</p>
-                <p class="text-right font-medium">Carlos Mendoza</p>
+                <p class="text-right font-medium">{contract.tenant.name}</p>
               </div>
 
               <div class="flex justify-between">
@@ -44,11 +52,32 @@ defmodule VivvoWeb.PropertyLive.Show do
 
               <div class="flex justify-between">
                 <p>Current Rent</p>
-                <p class="text-right font-medium">$300.000</p>
+                <p class="text-right font-medium">$ {format_currency(contract.monthly_rent)}</p>
               </div>
             </div>
 
-            <.button class="btn btn-primary btn-soft btn-lg">View Contract</.button>
+            <div
+              :if={is_nil(@property.contract)}
+              class="grow text-base-content/70 flex items-center justify-center"
+            >
+              <span>No active contract for this property.</span>
+            </div>
+
+            <.button
+              :if={@property.contract}
+              class="btn btn-primary btn-soft btn-lg"
+              onclick="contract_form_modal.showModal();"
+            >
+              Update Contract
+            </.button>
+
+            <.button
+              :if={is_nil(@property.contract)}
+              class="btn btn-primary btn-soft btn-lg"
+              onclick="contract_form_modal.showModal();"
+            >
+              New Contract
+            </.button>
           </div>
         </div>
       </section>
@@ -67,7 +96,10 @@ defmodule VivvoWeb.PropertyLive.Show do
               <span class="badge badge-success badge-soft badge-lg">Confirmed</span>
             </div>
 
-            <.button class="btn btn-neutral btn-outline btn-lg">View Payment History</.button>
+            <div class="grid grid-cols-2 gap-3">
+              <.button class="btn btn-secondary btn-soft btn-lg">Upload Receipt</.button>
+              <.button class="btn btn-secondary btn-outline btn-lg">View Payment History</.button>
+            </div>
           </div>
         </div>
       </section>
@@ -75,6 +107,7 @@ defmodule VivvoWeb.PropertyLive.Show do
       <section class="col-span-full card">
         <div class="card-body p-8">
           <h3 class="card-title text-xl font-semibold mb-4">Pending Receipts</h3>
+
           <div class="box p-5 rounded-box bg-warning/5 text-base-content/70 flex items-center justify-between gap-4">
             <div>
               <span class="text-lg font-medium">February 2025 Receipt</span>
@@ -94,6 +127,24 @@ defmodule VivvoWeb.PropertyLive.Show do
           </div>
         </div>
       </section>
+
+      <.modal id="contract_form_modal">
+        <.live_component
+          id="contract_form"
+          modal="contract_form_modal"
+          module={ContractForm}
+          property={@property}
+        />
+      </.modal>
+
+      <.modal id="edit_property_modal">
+        <.live_component
+          id="edit_property_form"
+          modal="edit_property_modal"
+          module={Form}
+          property={@property}
+        />
+      </.modal>
     </main>
     """
   end
@@ -106,5 +157,15 @@ defmodule VivvoWeb.PropertyLive.Show do
      socket
      |> assign(:page_title, "Property - #{property.address}")
      |> assign(:property, property)}
+  end
+
+  @impl true
+  def handle_info({:property_updated, property}, socket) do
+    {:noreply, assign(socket, :property, property)}
+  end
+
+  @impl true
+  def handle_info({:contract_created_or_updated, _contract}, socket) do
+    {:noreply, update(socket, :property, &Properties.get_property!(&1.id))}
   end
 end

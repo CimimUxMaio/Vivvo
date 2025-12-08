@@ -130,7 +130,7 @@ defmodule VivvoWeb.PropertyLive.Form do
   defp close_modal(socket) do
     # Reset form
     socket
-    |> push_event("close-modal", %{id: "new_property_modal"})
+    |> push_event("close-modal", %{id: socket.assigns.modal})
     |> assign(:form, to_form(Properties.change_property(%Property{})))
   end
 

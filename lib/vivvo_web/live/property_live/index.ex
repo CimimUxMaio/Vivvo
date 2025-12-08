@@ -53,6 +53,7 @@ defmodule VivvoWeb.PropertyLive.Index do
       <.live_component
         id="property_form"
         module={Form}
+        modal="new_property_modal"
       />
     </.modal>
     """
