@@ -1,8 +1,9 @@
 defmodule VivvoWeb.PropertyLive.Index do
   use VivvoWeb, :live_view
 
+  import VivvoWeb.PropertyLive.Helpers
+
   alias Vivvo.Properties
-  alias Vivvo.Properties.Property
 
   alias VivvoWeb.PropertyLive.Form
 
@@ -58,27 +59,19 @@ defmodule VivvoWeb.PropertyLive.Index do
   end
 
   def property_card(assigns) do
-    status = porperty_status(assigns.property)
-
-    badge_type =
-      case status do
-        "Occupied" -> "success"
-        "Vacant" -> "warning"
-      end
-
     category = property_category(assigns.property)
+    status = property_status(assigns.property)
 
     assigns =
       assigns
-      |> Map.put(:status, status)
-      |> Map.put(:badge_type, badge_type)
       |> Map.put(:category, category)
+      |> Map.put(:status, category)
 
     ~H"""
-    <a
+    <.link
       id={@id}
-      href="#"
-      class="card bg-base-100 shadow hover:shadow-md transition"
+      patch={~p"/properties/#{@property}"}
+      class="card"
     >
       <figure class="h-40 w-full overflow-hidden">
         <img
@@ -88,13 +81,13 @@ defmodule VivvoWeb.PropertyLive.Index do
         />
       </figure>
 
-      <div class="card-body p-5 space-y-1">
+      <div class="card-body space-y-1">
         <div class="flex items-center justify-between">
           <h3 class="card-title font-semibold text-lg">{@property.address}</h3>
-          <span class={"badge badge-soft badge-#{@badge_type}"}>{@status}</span>
+          <.status_badge property={@property} />
         </div>
 
-        <p class="text-sm text-base-content/70">{@category} · {@property.area} m²</p>
+        <p class="text-sm text-base-content/70">{property_summary(@property)}</p>
 
         <div class="flex justify-between items-center text-sm">
           <span :if={@status == "Occupied"}>Next payment: <strong>Feb 10</strong></span>
@@ -102,7 +95,7 @@ defmodule VivvoWeb.PropertyLive.Index do
           <span class="text-accent font-medium">1 receipt</span>
         </div>
       </div>
-    </a>
+    </.link>
     """
   end
 
@@ -132,14 +125,6 @@ defmodule VivvoWeb.PropertyLive.Index do
   defp list_properties() do
     Properties.list_properties()
   end
-
-  defp porperty_status(_property) do
-    Enum.random(["Occupied", "Vacant"])
-  end
-
-  defp property_category(%Property{type: :house}), do: "House"
-  defp property_category(%Property{rooms: 1}), do: "Studio"
-  defp property_category(%Property{rooms: rooms}), do: "#{rooms} rooms"
 
   defp status_options() do
     [

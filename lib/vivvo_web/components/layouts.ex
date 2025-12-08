@@ -43,7 +43,7 @@ defmodule VivvoWeb.Layouts do
 
         <.flash_group flash={@flash} />
 
-        <main class="grow m-5 p-5 overflow-y-scroll rounded-xl">
+        <main class="grow px-15 pt-3 pb-6 overflow-y-scroll rounded-xl">
           {render_slot(@inner_block)}
         </main>
       </div>

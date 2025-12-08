@@ -18,6 +18,7 @@ defmodule VivvoWeb.Router do
     pipe_through :browser
 
     live "/properties", PropertyLive.Index
+    live "/properties/:id", PropertyLive.Show
   end
 
   # Other scopes may use custom stacks.
