@@ -35,40 +35,19 @@ defmodule VivvoWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar px-4 sm:px-6 lg:px-8">
-      <div class="flex-1">
-        <a href="/" class="flex-1 flex w-fit items-center gap-2">
-          <img src={~p"/images/logo.svg"} width="36" />
-          <span class="text-sm font-semibold">v{Application.spec(:phoenix, :vsn)}</span>
-        </a>
-      </div>
-      <div class="flex-none">
-        <ul class="flex flex-column px-1 space-x-4 items-center">
-          <li>
-            <a href="https://phoenixframework.org/" class="btn btn-ghost">Website</a>
-          </li>
-          <li>
-            <a href="https://github.com/phoenixframework/phoenix" class="btn btn-ghost">GitHub</a>
-          </li>
-          <li>
-            <.theme_toggle />
-          </li>
-          <li>
-            <a href="https://hexdocs.pm/phoenix/overview.html" class="btn btn-primary">
-              Get Started <span aria-hidden="true">&rarr;</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </header>
+    <div class="min-h-screen h-screen flex bg-base-200 text-base-content">
+      <.sidebar current_scope={@current_scope} />
 
-    <main class="px-4 py-20 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl space-y-4">
-        {render_slot(@inner_block)}
-      </div>
-    </main>
+      <div class="grow flex flex-col">
+        <.navbar />
 
-    <.flash_group flash={@flash} />
+        <.flash_group flash={@flash} />
+
+        <main class="grow m-5 p-5 overflow-y-scroll rounded-xl">
+          {render_slot(@inner_block)}
+        </main>
+      </div>
+    </div>
     """
   end
 
@@ -149,6 +128,63 @@ defmodule VivvoWeb.Layouts do
         <.icon name="hero-moon-micro" class="size-4 opacity-75 hover:opacity-100" />
       </button>
     </div>
+    """
+  end
+
+  def sidebar(assigns) do
+    ~H"""
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <h1 class="sidebar-logo text-2xl font-bold text-primary ml-4">Vivvo</h1>
+        <.button
+          class="btn btn-ghost sidebar-toggle"
+          phx-click={JS.toggle_class("open-sidebar", to: "#sidebar")}
+        >
+          <.icon name="hero-bars-3" class="size-6" />
+        </.button>
+      </div>
+
+      <div class="sidebar-content">
+        <nav class="space-y-2">
+          <.link
+            class="sidebar-link"
+            patch={~p"/"}
+          >
+            <.icon name="hero-chart-pie" class="size-6" />
+            <span class="sidebar-label">Dashboard</span>
+          </.link>
+          <.link
+            class="sidebar-link active"
+            patch={~p"/properties"}
+          >
+            <.icon name="hero-building-office-2" class="size-6" />
+            <span class="sidebar-label">Properties</span>
+          </.link>
+          <.link
+            class="sidebar-link"
+            patch={~p"/contracts"}
+          >
+            <.icon name="hero-document-currency-dollar" class="size-6" />
+            <span class="sidebar-label">Contracts</span>
+          </.link>
+        </nav>
+      </div>
+    </aside>
+    """
+  end
+
+  def navbar(assigns) do
+    ~H"""
+    <header class="flex items-center justify-end px-6 py-4">
+      <div class="flex items-center space-x-3">
+        <span>Juan (Owner)</span>
+        <div class="avatar avatar-placeholder">
+          <div class="w-10 rounded-full bg-primary text-primary-content">
+            J
+          </div>
+        </div>
+      </div>
+    </header>
     """
   end
 end
