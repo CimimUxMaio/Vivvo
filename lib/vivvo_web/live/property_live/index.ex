@@ -129,7 +129,7 @@ defmodule VivvoWeb.PropertyLive.Index do
     {:noreply, stream_insert(socket, :properties, property)}
   end
 
-  defp list_properties() do
+  defp list_properties do
     Properties.list_properties()
   end
 
@@ -141,7 +141,7 @@ defmodule VivvoWeb.PropertyLive.Index do
   defp property_category(%Property{rooms: 1}), do: "Studio"
   defp property_category(%Property{rooms: rooms}), do: "#{rooms} rooms"
 
-  defp status_options() do
+  defp status_options do
     [
       {"All", "all"},
       {"Occupied", "occupied"},
@@ -149,7 +149,7 @@ defmodule VivvoWeb.PropertyLive.Index do
     ]
   end
 
-  defp sort_options() do
+  defp sort_options do
     [
       {"Newest", "newest"},
       {"Oldest", "oldest"},
