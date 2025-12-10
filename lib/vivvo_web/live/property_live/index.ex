@@ -58,7 +58,7 @@ defmodule VivvoWeb.PropertyLive.Index do
   end
 
   def property_card(assigns) do
-    status = porperty_status(assigns.property)
+    status = property_status(assigns.property)
 
     badge_type =
       case status do
@@ -133,7 +133,7 @@ defmodule VivvoWeb.PropertyLive.Index do
     Properties.list_properties()
   end
 
-  defp porperty_status(_property) do
+  defp property_status(_property) do
     Enum.random(["Occupied", "Vacant"])
   end
 
