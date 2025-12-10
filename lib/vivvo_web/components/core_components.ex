@@ -149,6 +149,12 @@ defmodule VivvoWeb.CoreComponents do
     |> custom_input()
   end
 
+  def input(assigns) do
+    assigns
+    |> assign(:errors, [])
+    |> custom_input()
+  end
+
   defp custom_input(%{type: "select"} = assigns) do
     ~H"""
     <select
