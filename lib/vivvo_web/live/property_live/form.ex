@@ -120,7 +120,8 @@ defmodule VivvoWeb.PropertyLive.Form do
          socket
          |> put_flash(:info, "Property created successfully")
          |> dispatch_action_event(property)
-         |> close_modal()}
+         |> close_modal()
+         |> assign(:form, to_form(Properties.change_property(%Property{})))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -128,10 +129,7 @@ defmodule VivvoWeb.PropertyLive.Form do
   end
 
   defp close_modal(socket) do
-    # Reset form
-    socket
-    |> push_event("close-modal", %{id: socket.assigns.modal})
-    |> assign(:form, to_form(Properties.change_property(%Property{})))
+    push_event(socket, "close-modal", %{id: socket.assigns.modal})
   end
 
   defp dispatch_action_event(socket, property) do
