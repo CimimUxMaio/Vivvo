@@ -12,35 +12,41 @@ defmodule VivvoWeb.PropertyLive.Index do
     ~H"""
     <main class="flex flex-col gap-6">
       <section class="w-full">
-        <div class="flex flex-row items-center justify-between gap-3">
-          <label class="input">
-            <div class="label flex items-center justify-between p-2">
-              <.icon name="hero-magnifying-glass" />
+        <div class="flex flex-row items-center gap-3">
+          <.form
+            for={nil}
+            phx-change="filter-update"
+            class="grow flex items-center justify-between gap-3"
+          >
+            <label class="input">
+              <div class="label flex items-center justify-between p-2">
+                <.icon name="hero-magnifying-glass" class="size-5" />
+              </div>
+              <input
+                type="text"
+                name="filters[term]"
+                placeholder="Search properties..."
+              />
+            </label>
+
+            <div class="flex items-center gap-3">
+              <select class="select" name="filters[status]">
+                <option :for={{label, value} <- status_options()} value={value}>
+                  {label}
+                </option>
+              </select>
+
+              <select class="select" name="filters[sort_by]">
+                <option :for={{label, value} <- sort_options()} value={value}>
+                  {label}
+                </option>
+              </select>
             </div>
-            <input
-              type="text"
-              placeholder="Search properties..."
-              class="w-1/2"
-            />
-          </label>
+          </.form>
 
-          <div class="flex items-center gap-2">
-            <select class="select">
-              <option :for={{label, value} <- status_options()} value={value}>
-                {label}
-              </option>
-            </select>
-
-            <select class="select">
-              <option :for={{label, value} <- sort_options()} value={value}>
-                {label}
-              </option>
-            </select>
-
-            <button class="btn btn-primary" onclick="new_property_modal.showModal()">
-              <.icon name="hero-plus" class="size-5" /> New Property
-            </button>
-          </div>
+          <button class="btn btn-primary" onclick="new_property_modal.showModal()">
+            <.icon name="hero-plus" class="size-5" /> New Property
+          </button>
         </div>
       </section>
 
@@ -107,7 +113,7 @@ defmodule VivvoWeb.PropertyLive.Index do
 
   @impl true
   def handle_params(_unsigned_params, _uri, socket) do
-    {:noreply, stream(socket, :properties, list_properties())}
+    {:noreply, load_properties(socket)}
   end
 
   @impl true
@@ -118,13 +124,23 @@ defmodule VivvoWeb.PropertyLive.Index do
     {:noreply, stream_delete(socket, :properties, property)}
   end
 
+  def handle_event("filter-update", %{"filters" => filters}, socket) do
+    {:noreply,
+     socket
+     |> assign(:filters, filters)
+     |> load_properties()}
+  end
+
   @impl true
   def handle_info({:property_created, property}, socket) do
     {:noreply, stream_insert(socket, :properties, property)}
   end
 
-  defp list_properties do
-    Properties.list_properties()
+  defp load_properties(socket) do
+    filters = socket.assigns[:filters] || %{}
+
+    socket
+    |> stream(:properties, Properties.list_properties(filters), reset: true)
   end
 
   defp status_options do
@@ -138,9 +154,7 @@ defmodule VivvoWeb.PropertyLive.Index do
   defp sort_options do
     [
       {"Newest", "newest"},
-      {"Oldest", "oldest"},
-      {"Area: Low to High", "area_asc"},
-      {"Area: High to Low", "area_desc"}
+      {"Oldest", "oldest"}
     ]
   end
 end
