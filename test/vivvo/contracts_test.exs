@@ -21,7 +21,12 @@ defmodule Vivvo.ContractsTest do
     end
 
     test "create_contract/1 with valid data creates a contract" do
-      valid_attrs = %{to: ~D[2025-12-07], from: ~D[2025-12-07], monthly_rent: "120.5", payment_day: 42}
+      valid_attrs = %{
+        to: ~D[2025-12-07],
+        from: ~D[2025-12-07],
+        monthly_rent: "120.5",
+        payment_day: 42
+      }
 
       assert {:ok, %Contract{} = contract} = Contracts.create_contract(valid_attrs)
       assert contract.to == ~D[2025-12-07]
@@ -36,7 +41,13 @@ defmodule Vivvo.ContractsTest do
 
     test "update_contract/2 with valid data updates the contract" do
       contract = contract_fixture()
-      update_attrs = %{to: ~D[2025-12-08], from: ~D[2025-12-08], monthly_rent: "456.7", payment_day: 43}
+
+      update_attrs = %{
+        to: ~D[2025-12-08],
+        from: ~D[2025-12-08],
+        monthly_rent: "456.7",
+        payment_day: 43
+      }
 
       assert {:ok, %Contract{} = contract} = Contracts.update_contract(contract, update_attrs)
       assert contract.to == ~D[2025-12-08]
