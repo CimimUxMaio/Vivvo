@@ -7,7 +7,7 @@ defmodule Vivvo.Repo.Migrations.CreateContracts do
       add :to, :date
       add :monthly_rent, :decimal
       add :payment_day, :integer
-      add :tenant_id, references(:tenants, on_delete: :nothing)
+      add :tenant_id, references(:tenants, on_delete: :delete_all)
 
       timestamps(type: :utc_datetime)
     end
