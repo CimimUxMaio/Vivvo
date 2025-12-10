@@ -5,7 +5,6 @@ defmodule VivvoWeb.PropertyLive.ContractForm do
   alias Vivvo.Contracts.Contract
 
   alias Vivvo.Properties
-  alias Vivvo.Properties.Property
 
   alias Vivvo.Tenants
 
@@ -150,8 +149,6 @@ defmodule VivvoWeb.PropertyLive.ContractForm do
 
   defp close_modal(socket) do
     push_event(socket, "close-modal", %{id: socket.assigns.modal})
-    # Reset form
-    |> assign(:form, to_form(Properties.change_property(%Property{})))
   end
 
   defp dispatch_action_event(socket, contract) do
