@@ -89,3 +89,11 @@ if (process.env.NODE_ENV === "development") {
     },
   );
 }
+
+// Modal close event listener
+window.addEventListener("phx:close-modal", ({ detail: { id } }) => {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.close();
+  }
+});
