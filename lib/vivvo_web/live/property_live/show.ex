@@ -47,7 +47,7 @@ defmodule VivvoWeb.PropertyLive.Show do
 
               <div class="flex justify-between">
                 <p>Period</p>
-                <p class="text-right font-medium">Jan 2023 - Jan 2027</p>
+                <p class="text-right font-medium">{format_contract_period(@property.contract)}</p>
               </div>
 
               <div class="flex justify-between">
@@ -167,5 +167,11 @@ defmodule VivvoWeb.PropertyLive.Show do
   @impl true
   def handle_info({:contract_created_or_updated, _contract}, socket) do
     {:noreply, update(socket, :property, &Properties.get_property!(&1.id))}
+  end
+
+  defp format_contract_period(contract) do
+    Calendar.strftime(contract.from, "%b %Y") <>
+      " → " <>
+      ((contract.to && Calendar.strftime(contract.to, "%b %Y")) || "Future")
   end
 end
