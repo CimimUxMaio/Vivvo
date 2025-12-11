@@ -145,3 +145,11 @@
 #sidebar.open-sidebar .sidebar-link {
   @apply justify-start;
 }
+
+@utility card {
+  @apply bg-base-100 shadow hover:shadow-md transition;
+}
+
+@utility card-body {
+  @apply p-5;
+}

@@ -2,11 +2,11 @@ defmodule Vivvo.Properties do
   @moduledoc """
   The Properties context.
   """
-
   import Ecto.Query, warn: false
-  alias Vivvo.Repo
 
   alias Vivvo.Properties.Property
+
+  alias Vivvo.Repo
 
   @doc """
   Returns the list of properties.
@@ -17,8 +17,12 @@ defmodule Vivvo.Properties do
       [%Property{}, ...]
 
   """
-  def list_properties do
-    Repo.all(Property)
+  def list_properties(params \\ %{}) do
+    from(p in Property, preload: [contract: :tenant])
+    |> filter_by_status(params["status"])
+    |> filter_by_term(params["term"])
+    |> sort_by(params["sort_by"])
+    |> Repo.all()
   end
 
   @doc """
@@ -35,7 +39,7 @@ defmodule Vivvo.Properties do
       ** (Ecto.NoResultsError)
 
   """
-  def get_property!(id), do: Repo.get!(Property, id)
+  def get_property!(id), do: Repo.get!(Property, id) |> Repo.preload(contract: :tenant)
 
   @doc """
   Creates a property.
@@ -101,4 +105,45 @@ defmodule Vivvo.Properties do
   def change_property(%Property{} = property, attrs \\ %{}) do
     Property.changeset(property, attrs)
   end
+
+  def create_contract(property, contract_attrs) do
+    update_property(property, %{"contract" => contract_attrs})
+  end
+
+  # Filters
+
+  defp filter_by_status(query, all) when all in [nil, "all", ""], do: query
+
+  defp filter_by_status(query, "occupied") do
+    from p in query,
+      where: not is_nil(p.contract_id)
+  end
+
+  defp filter_by_status(query, "vacant") do
+    from p in query,
+      where: is_nil(p.contract_id)
+  end
+
+  defp filter_by_term(query, nil), do: query
+
+  defp filter_by_term(query, term) do
+    like_term = "%#{term}%"
+
+    from p in query,
+      where: ilike(p.address, ^like_term)
+  end
+
+  defp sort_by(query, "newest") do
+    from(p in query,
+      order_by: [desc: p.inserted_at]
+    )
+  end
+
+  defp sort_by(query, "oldest") do
+    from(p in query,
+      order_by: [asc: p.inserted_at]
+    )
+  end
+
+  defp sort_by(query, _), do: sort_by(query, "newest")
 end

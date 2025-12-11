@@ -15,3 +15,6 @@ setup:
 stop:
 	@echo "Stopping Docker containers..."
 	docker compose -f docker-compose-dev.yml down && echo "✔️ Docker containers stopped"
+
+psql:
+	docker exec -it vivvo_postgres psql -U postgres -d vivvo_dev
