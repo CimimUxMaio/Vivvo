@@ -63,7 +63,7 @@ defmodule VivvoWeb.PropertyLive.ContractForm do
             type="number"
             class="input"
             placeholder="1"
-            min="0"
+            min="1"
             step="1"
           />
           <.error field={@form[:payment_day]} />
