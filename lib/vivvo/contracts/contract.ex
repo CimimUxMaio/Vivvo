@@ -1,4 +1,5 @@
 defmodule Vivvo.Contracts.Contract do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
